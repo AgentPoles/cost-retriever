@@ -10,6 +10,7 @@ export class AppService {
   constructor() {
     this.indexerApiKey = process.env.INDEXER_API_KEY;
     this.indexerURL = process.env.INDEXER_URL;
+    this.relayerURL = process.env.RELAYER_URL;
   }
 
   calculateTransactionFee(gasUsed, gasPriceInGwei) {
@@ -56,11 +57,9 @@ export class AppService {
 
   getTransactionReferenceFromRelayer = async (taskId: string) => {
     try {
-      const response = await axios.get(this.relayerURL, {
-        params: {
-          taskId: taskId,
-        },
-      });
+      const url = this.relayerURL + taskId;
+      console.log(url);
+      const response = await axios.get(url);
 
       console.log(response);
     } catch (error) {
