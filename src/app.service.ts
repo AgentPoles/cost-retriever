@@ -3,10 +3,13 @@ import axios from 'axios';
 
 @Injectable()
 export class AppService {
-  private etherscanApiKey: string;
+  private indexerApiKey: string;
+  private indexerURL: string;
+  private relayerURL: string;
 
   constructor() {
-    this.etherscanApiKey = 'RM7NRD9JH6FU2PZ7177XMJ7FZMYY2F5PTI';
+    this.indexerApiKey = process.env.INDEXER_API_KEY;
+    this.indexerURL = process.env.INDEXER_URL;
   }
 
   calculateTransactionFee(gasUsed, gasPriceInGwei) {
@@ -21,17 +24,14 @@ export class AppService {
 
   async getTransactionGasCost(transactionHash: string) {
     try {
-      const response = await axios.get(
-        'https://api-testnet.polygonscan.com/api',
-        {
-          params: {
-            module: 'proxy',
-            action: 'eth_getTransactionByHash',
-            txhash: transactionHash,
-            apikey: this.etherscanApiKey,
-          },
+      const response = await axios.get(this.indexerURL, {
+        params: {
+          module: 'proxy',
+          action: 'eth_getTransactionByHash',
+          txhash: transactionHash,
+          apikey: this.indexerApiKey,
         },
-      );
+      });
 
       console.log(response);
 
@@ -39,7 +39,7 @@ export class AppService {
         const gas = response.data.result.gas;
         const gasPrice = response.data.result.gasPrice / 1000000000;
         console.log(parseInt(gas));
-        console.log(gasPrice);
+
         return {
           gas: parseInt(gas, 16),
           gasInEthers: this.calculateTransactionFee(gas, gasPrice),
@@ -53,4 +53,18 @@ export class AppService {
       throw new Error(`Error fetching transaction details: ${error.message}`);
     }
   }
+
+  getTransactionReferenceFromRelayer = async (taskId: string) => {
+    try {
+      const response = await axios.get(this.relayerURL, {
+        params: {
+          taskId: taskId,
+        },
+      });
+
+      console.log(response);
+    } catch (error) {
+      throw new Error(`Error fetching transaction details: ${error.message}`);
+    }
+  };
 }

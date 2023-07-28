@@ -9,4 +9,8 @@ export class AppController {
   async getGasCost(@Param('transactionHash') transactionHash: string) {
     return this.appService.getTransactionGasCost(transactionHash);
   }
+  @Get(':taskId')
+  async getTransactionReference(@Param('taskId') taskId: string) {
+    return this.appService.getTransactionReferenceFromRelayer(taskId);
+  }
 }
