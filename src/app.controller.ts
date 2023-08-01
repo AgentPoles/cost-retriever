@@ -7,6 +7,6 @@ export class AppController {
 
   @Get(':taskId')
   async getTransactionCost(@Param('taskId') taskId: string) {
-    return this.appService.getTransactionCost(taskId, 'gelato');
+    return this.appService.getTransactionCost(taskId, 'gelato', 'MUMBAI');
   }
 }
