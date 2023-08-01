@@ -13,17 +13,7 @@ const gelatoCostRetriever = async (taskId, network) => {
   const url = process.env.GELATO_RELAYER_STATUS_URL + taskId;
   const gelatoResponse = await axios.get(url);
   const transactionHash = gelatoResponse.data.task.transactionHash;
-  const indexerResponse = await axios.get(process.env.INDEXER_URL, {
-    params: {
-      module: 'proxy',
-      action: 'eth_getTransactionByHash',
-      txhash: transactionHash,
-      apikey: process.env.INDEXER_API_KEY,
-    },
-  });
-  const gas = indexerResponse.data.result.gas;
-  const gasPriceInGWei = indexerResponse.data.result.gasPrice / 1000000000;
-  const cost = calculateTransactionFee(gas, gasPriceInGWei);
+  const cost = await getGasCost(network, transactionHash);
   const totalCost = addPremium(cost);
   const tokenSymbol = symbolRetriever(network);
   const totalCostInDollar = await retrieveCostInDollar(totalCost, tokenSymbol);
@@ -57,6 +47,30 @@ const retrieveCostInDollar = async (cost, tokenSymbol) => {
   const priceInUSD = tokenData[0].quote.USD.price;
 
   return priceInUSD * cost;
+};
+
+const getGasCost = async (network, transactionHash) => {
+  switch (network) {
+    case 'MUMBAI':
+      return await getPolygonMumbaiCost(transactionHash);
+    default:
+      return await getPolygonMumbaiCost(transactionHash);
+  }
+};
+
+const getPolygonMumbaiCost = async (transactionHash: string) => {
+  const indexerResponse = await axios.get(process.env.MUMBAI_INDEXER_URL, {
+    params: {
+      module: 'proxy',
+      action: 'eth_getTransactionByHash',
+      txhash: transactionHash,
+      apikey: process.env.MUMBAI_INDEXER_API_KEY,
+    },
+  });
+  const gas = indexerResponse.data.result.gas;
+  const gasPriceInGWei = indexerResponse.data.result.gasPrice / 1000000000;
+  const cost = calculateTransactionFee(gas, gasPriceInGWei);
+  return cost;
 };
 
 export default retrieveCost;
