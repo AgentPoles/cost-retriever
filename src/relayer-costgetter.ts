@@ -17,7 +17,7 @@ const gelatoCostRetriever = async (taskId, network) => {
   const totalCost = addPremium(cost);
   const tokenSymbol = symbolRetriever(network);
   const totalCostInDollar = await retrieveCostInDollar(totalCost, tokenSymbol);
-  return { totalCost, totalCostInDollar };
+  return { totalCost, totalCostInDollar, tokenSymbol };
 };
 
 const calculateTransactionFee = (gasUsed, gasPriceInGwei) => {
