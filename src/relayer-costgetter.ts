@@ -23,7 +23,6 @@ const gelatoCostRetriever = async (taskId) => {
   const gas = indexerResponse.data.result.gas;
   const gasPriceInGWei = indexerResponse.data.result.gasPrice / 1000000000;
   const cost = calculateTransactionFee(gas, gasPriceInGWei);
-  console.log(cost);
   return addPremium(cost);
 };
 

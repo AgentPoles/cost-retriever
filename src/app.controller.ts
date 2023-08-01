@@ -7,7 +7,6 @@ export class AppController {
 
   @Get(':taskId')
   async getTransactionCost(@Param('taskId') taskId: string) {
-    console.log('here');
     return this.appService.getTransactionCost(taskId, 'gelato');
   }
 }
