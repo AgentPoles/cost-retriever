@@ -5,12 +5,9 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get(':transactionHash/gas-cost')
-  async getGasCost(@Param('transactionHash') transactionHash: string) {
-    return this.appService.getTransactionGasCost(transactionHash);
-  }
   @Get(':taskId')
-  async getTransactionReference(@Param('taskId') taskId: string) {
-    return this.appService.getTransactionReferenceFromRelayer(taskId);
+  async getTransactionCost(@Param('taskId') taskId: string) {
+    console.log('here');
+    return this.appService.getTransactionCost(taskId, 'gelato');
   }
 }
